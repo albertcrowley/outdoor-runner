@@ -1,0 +1,3 @@
+title=outdoor-runner
+author=Al Crowley
+orientation=portrait
