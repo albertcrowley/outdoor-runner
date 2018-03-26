@@ -26,12 +26,28 @@ class Sprite(Image):
         self.size = (self.texture.width, self.texture.height)
         self.texture.mag_filter = 'nearest'
 
+class Background(Widget):
+    def __init__(self, source):
+        super(Background, self).__init__()
+        self.image = Sprite(source=source)
+        self.add_widget(self.image)
+        self.size = self.image.size
+        self.image_dupe = Sprite(source=source, x=self.width)
+        self.add_widget(self.image_dupe)
+        self.speed = 6;
+
+    def update(self, dt):
+        self.image.x -= self.speed
+        self.image_dupe.x -= self.speed
+        if self.image.right <= 0:
+            self.image.x = 0
+            self.image_dupe.x = self.width
+
 
 class Game(Widget):
     def __init__(self):
         super(Game, self).__init__()
-        self.background = Sprite(source="background.png", pos=(0,0))
-        self.background.pos = (0,0)
+        self.background = Background(source="background.png")
         self.add_widget(self.background)
 
         Clock.schedule_interval(self.update, 1.0 / 60.0)
@@ -39,7 +55,7 @@ class Game(Widget):
 
 
     def update(self, dt):
-        pass
+        self.background.update(dt=dt)
 
 
 
