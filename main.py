@@ -35,10 +35,11 @@ class Background(Widget):
         self.image_dupe = Sprite(source=source, x=self.width)
         self.add_widget(self.image_dupe)
         self.speed = 6;
+        self.tick = 1.0/60.0
 
     def update(self, dt):
-        self.image.x -= self.speed
-        self.image_dupe.x -= self.speed
+        self.image.x -= self.speed * (dt / self.tick)
+        self.image_dupe.x -= self.speed * (dt / self.tick)
         if self.image.right <= 0:
             self.image.x = 0
             self.image_dupe.x = self.width
