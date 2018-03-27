@@ -60,6 +60,35 @@ class SpriteAtlas(Atlas):
 
         self.textures = textures
 
+class Obstacles():
+    def __init__(self):
+        self.rocks = []
+        self.ticks_with_no_rocks = 0
+        self.vx = -360
+        self.vy = 0
+
+    def addrock(self):
+        sprite = Sprite(source='rock.png')
+        sprite.pos = (1000,0)
+        self.rocks.append(sprite)
+        App.get_running_app().root.add_widget(sprite)
+
+    def update(self, dt):
+        for sprite in self.rocks:
+            sprite.x += self.vx * dt
+            sprite.y += self.vy * dt
+            if sprite.x < -50:
+                App.get_running_app().root.remove_widget(sprite)
+
+
+        self.ticks_with_no_rocks += 1
+        if self.ticks_with_no_rocks > 60:
+            rand = randint(1, 100)
+            if rand < 3:
+                self.addrock()
+                self.ticks_with_no_rocks = 0
+
+
 
 class Player(Sprite):
 
@@ -99,7 +128,7 @@ class Background(Widget):
         self.size = self.image.size
         self.image_dupe = Sprite(source=source, x=self.width)
         self.add_widget(self.image_dupe)
-        self.speed = 6;
+        self.speed = 4;
         self.tick = 1.0/60.0
 
     def update(self, dt):
@@ -118,6 +147,7 @@ class Game(Widget):
         self.add_widget(self.background)
         self.player = Player(pos=(100,-0.1))
         self.add_widget(self.player)
+        self.obstacles = Obstacles()
 
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
@@ -126,6 +156,7 @@ class Game(Widget):
     def update(self, dt):
         self.background.update(dt=dt)
         self.player.update(dt=dt)
+        self.obstacles.update(dt=dt)
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         if keycode[1] == 'spacebar':
