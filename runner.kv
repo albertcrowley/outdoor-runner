@@ -1,0 +1,20 @@
+#:kivy 1.0
+
+<Button>:
+    pos: (300,400)
+    color: (0,.3,1,1)
+    background_normal: ''
+    background_color: (1,1,1,1)
+    width: 150
+    height:50
+
+    canvas.before:
+        Color:
+            rgb: (0,0,0,1)
+        Rectangle:
+            pos: (295,395)
+            size: (160,60)
+
+    on_press: root.parent.start()
+
+

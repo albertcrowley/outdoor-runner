@@ -10,6 +10,7 @@ from kivy.clock import Clock
 from kivy.uix.label import Label
 from kivy.core.window import Window
 from kivy.uix.image import Image
+from kivy.uix.button import Button
 from kivy.atlas import Atlas, Logger
 import os
 import json
@@ -136,12 +137,38 @@ class Game(Widget):
         self._keyboard = None
 
 
+class ScreenMan(Widget):
+    def __init__(self):
+        super(ScreenMan,self).__init__()
+
+
+class Menu(Widget):
+    def __init__(self):
+        super(Menu,self).__init__()
+        self.back = Sprite(source='background.png')
+        self.add_widget(self.back)
+
+        start_button = Button(text='Start')
+        self.add_widget(start_button)
+
+    def start(self):
+        app = App.get_running_app()
+        app.start()
 
 
 class Runner(App):
     def build(self):
+        self.menu = Menu()
+        self.sm = ScreenMan()
+        self.sm.add_widget(self.menu)
+        return self.sm
+
+    def start(self):
+        print ("starting")
+        self.sm.clear_widgets()
         game = Game()
-        return game
+        self.sm.add_widget(game)
+
 
 
 if __name__ == '__main__':
