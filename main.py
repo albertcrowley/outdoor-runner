@@ -65,6 +65,8 @@ class Player(Sprite):
     def __init__(self, pos):
         self.images = SpriteAtlas('RUN.atlas')
         super(Player, self).__init__(texture=self.images['1'], pos=pos)
+        self.velocity_y = 0
+        self.gravity = -900;
         self.tick = 1.0/60.0
         self.ticks = 0;
         self.height *= 2
@@ -72,9 +74,20 @@ class Player(Sprite):
 
     def update(self, dt):
         self.ticks += 1
+        if self.y < 0:
+            self.velocity_y = 0
+            self.y = -0.1
+        else:
+            self.velocity_y += self.gravity * dt
+            self.velocity_y = max(self.velocity_y, -600)
+            self.y += self.velocity_y * dt
         frame = int(math.floor( self.ticks / 10)) % 8
         self.texture = self.images[str(frame)]
 
+    def jump(self):
+        if self.y < 0:
+            self.velocity_y = 400;
+            self.y = 1
 
 
 class Background(Widget):
@@ -85,7 +98,7 @@ class Background(Widget):
         self.size = self.image.size
         self.image_dupe = Sprite(source=source, x=self.width)
         self.add_widget(self.image_dupe)
-        self.speed = 3;
+        self.speed = 6;
         self.tick = 1.0/60.0
 
     def update(self, dt):
@@ -105,12 +118,22 @@ class Game(Widget):
         self.player = Player(pos=(100,-0.1))
         self.add_widget(self.player)
 
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
 
     def update(self, dt):
         self.background.update(dt=dt)
         self.player.update(dt=dt)
 
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        if keycode[1] == 'spacebar':
+            self.player.jump()
+        return True
 
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
 
 
 
