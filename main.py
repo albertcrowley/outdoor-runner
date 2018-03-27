@@ -74,11 +74,14 @@ class Obstacles():
         App.get_running_app().root.add_widget(sprite)
 
     def update(self, dt):
+        player = App.get_running_app().game.player
         for sprite in self.rocks:
             sprite.x += self.vx * dt
             sprite.y += self.vy * dt
             if sprite.x < -50:
                 App.get_running_app().root.remove_widget(sprite)
+            if sprite.collide_widget(player):
+                App.get_running_app().game.gameOver()
 
 
         self.ticks_with_no_rocks += 1
@@ -152,11 +155,16 @@ class Game(Widget):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
+        self.game_running = False
+
+    def setGameState(self, state):
+        self.game_running = state
 
     def update(self, dt):
-        self.background.update(dt=dt)
-        self.player.update(dt=dt)
-        self.obstacles.update(dt=dt)
+        if self.game_running:
+            self.background.update(dt=dt)
+            self.player.update(dt=dt)
+            self.obstacles.update(dt=dt)
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         if keycode[1] == 'spacebar':
@@ -166,6 +174,10 @@ class Game(Widget):
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
+
+    def gameOver(self):
+        self.game_over = True
+        self.setGameState(False)
 
 
 class ScreenMan(Widget):
@@ -185,6 +197,8 @@ class Menu(Widget):
     def start(self):
         app = App.get_running_app()
         app.start()
+        App.get_running_app().game.setGameState(True)
+
 
 
 class Runner(App):
@@ -197,8 +211,8 @@ class Runner(App):
     def start(self):
         print ("starting")
         self.sm.clear_widgets()
-        game = Game()
-        self.sm.add_widget(game)
+        self.game = Game()
+        self.sm.add_widget(self.game)
 
 
 
