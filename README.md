@@ -1,2 +1,2 @@
 # outdoor-runner
-kivi sample game
+Simple endless runner made with Kivi.
